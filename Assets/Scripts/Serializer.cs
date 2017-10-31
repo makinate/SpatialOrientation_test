@@ -38,6 +38,13 @@ public class Serializer : MonoBehaviour {
         tempTime     = 0.0f;
         tempEvent    = "idle";
 
+        string subPath = "Data"; 
+
+        bool exists = System.IO.Directory.Exists(subPath);
+
+        if (!exists)
+            System.IO.Directory.CreateDirectory(subPath);
+
         myfilename = "Data/"+ sbj + "_" + vision + "_" + explore + "_" + timeStamp + ".csv";
 
         sw = new StreamWriter(myfilename);
