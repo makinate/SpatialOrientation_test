@@ -22,6 +22,16 @@ SpatialOrientation_test/Assets/Meshes/
 SpatialOrientation_test/App/ 
 SpatialOrientation_test/UWP/ 
 
+SpatialOrientation_test/SpatialOrientation/[Ll]ibrary/
+SpatialOrientation_test/SpatialOrientation/[Tt]emp/
+SpatialOrientation_test/SpatialOrientation/[Oo]bj/
+SpatialOrientation_test/SpatialOrientation/[Bb]uild/
+SpatialOrientation_test/SpatialOrientation/[Bb]uilds/
+SpatialOrientation_test/SpatialOrientation/Assets/AssetStoreTools*
+SpatialOrientation_test/SpatialOrientation/Assets/Meshes/
+SpatialOrientation_test/SpatialOrientation/App/ 
+SpatialOrientation_test/SpatialOrientation/UWP/ 
+
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
