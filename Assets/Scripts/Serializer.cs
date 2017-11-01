@@ -12,8 +12,7 @@ using UnityEngine.UI;
 public class Serializer : MonoBehaviour {
 
     public GameObject player; // the gameObject whose position we want to know
-    public GameObject playerCam; // the gameobject whose rotation we want to know
-    
+    public GameObject sphere;
     // define public variables for experiment
     public string sbj     = "sbj00";
     public string vision  = "control";
@@ -23,20 +22,23 @@ public class Serializer : MonoBehaviour {
     // private variables
     private string  myfilename;
     private string  timeStamp = string.Format("{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
-    private string  tempEvent;
+    private string  currentState;
     private float   tempTime;      
     private TextWriter sw;
     private GameObject experimentManager;
-    private Vector3 tempPosition;     // position
-    private Vector3 tempRotation;     // rotation
-
+    private Vector3 tempPlayerPosition;     // position
+    private Vector3 tempPlayerRotation;     // rotation
+    private Vector3 tempSpherePosition;     // position
+    private Vector3 tempSphereRotation;     // rotation
     // prep file
     void Start () {
         experimentManager = GameObject.Find("ExperimentManager");
-        tempPosition = player.transform.position;
-        tempRotation = playerCam.transform.rotation.eulerAngles;
-        tempTime     = 0.0f;
-        tempEvent    = "idle";
+        tempPlayerPosition = player.transform.position;
+        tempPlayerRotation = player.transform.rotation.eulerAngles;
+        tempSpherePosition = sphere.transform.position;
+        tempSphereRotation = sphere.transform.rotation.eulerAngles;
+        tempTime = 0.0f;
+        currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
 
         string subPath = "Data"; 
 
@@ -50,16 +52,18 @@ public class Serializer : MonoBehaviour {
         sw = new StreamWriter(myfilename);
 
         // write a header
-        string header = "x, y, z, pitch, yaw, roll, event, event";
+        string header = "x, y, z, playerPitch, playerYaw, playerRoll, sphere.x, sphere.y, sphere.z, spherePitch, sphereYaw, sphereRoll, event, time";
         sw.WriteLine(header);
     }
 	
 	// log the data
 	void Update () {
-        tempPosition = player.transform.position;
-        tempRotation = playerCam.transform.rotation.eulerAngles;
+        tempPlayerPosition = player.transform.position;
+        tempPlayerRotation = player.transform.rotation.eulerAngles;
+        tempSpherePosition = sphere.transform.position;
+        tempSphereRotation = sphere.transform.rotation.eulerAngles;
         tempTime     = tempTime + Time.fixedDeltaTime;
-        tempEvent    = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
+        currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
 
         // write position once every Uptdate()
         WriteToFile();
@@ -69,7 +73,11 @@ public class Serializer : MonoBehaviour {
     // write position, rotation, events and time stamp to file
     void WriteToFile()
     {
-        string output = tempPosition.x + "," + tempPosition.y + "," + tempPosition.z + "," + tempRotation.x + "," + tempRotation.y + "," + tempRotation.z + "," + tempEvent + "," + tempTime;
+        string output = tempPlayerPosition.x + "," + tempPlayerPosition.y + "," + tempPlayerPosition.z + "," + 
+                        tempPlayerRotation.x + "," + tempPlayerRotation.y + "," + tempPlayerRotation.z + "," +
+                        tempSpherePosition.x + "," + tempSpherePosition.y + "," + tempSpherePosition.z + "," +
+                        tempSphereRotation.x + "," + tempSphereRotation.y + "," + tempSphereRotation.z + "," +
+                        currentState + "," + tempTime;
         sw.WriteLine(output);
     }
 

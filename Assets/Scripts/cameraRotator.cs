@@ -7,9 +7,9 @@ public class cameraRotator : MonoBehaviour {
     float z;
     float x;
     float y;
-    public float euler;
-    public float azimuthRot;
-    private GameObject m_Fader; 
+    public float elevation;
+    public float azimuth;
+    public GameObject m_Fader; 
 
     void Awake()
     {
@@ -27,49 +27,7 @@ public class cameraRotator : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            
-            fadeInOut();
-            z = transform.eulerAngles.z;
-            x = transform.eulerAngles.x;
-            y = transform.eulerAngles.y;
-            euler = Random.Range(0, 360);
-
-            Vector3 desiredRot = new Vector3(x, y + euler, z);
-
-            gameObject.transform.rotation = Quaternion.Euler(desiredRot);
-            Debug.Log("Rotate to random view (around vertical axis only)");
-            
-        }
-        else if (Input.GetKeyDown(KeyCode.K))
-        {
-            //gameObject.transform.rotation = Random.rotation;
-
-            z = transform.eulerAngles.z;
-            x = transform.eulerAngles.x;
-            y = transform.eulerAngles.y;
-            azimuthRot = Random.Range(-20, 20);
-            Vector3 desiredRot = new Vector3(x + azimuthRot, y , z);
-
-            gameObject.transform.rotation = Quaternion.Euler(desiredRot);
-            Debug.Log("Rotate to random view (around horizontal axis only)");
-        }
-        else if (Input.GetKeyDown(KeyCode.L))
-        {
-            //gameObject.transform.rotation = Random.rotation;
-
-            z = transform.eulerAngles.z;
-            x = transform.eulerAngles.x;
-            y = transform.eulerAngles.y;
-            euler = Random.Range(0, 360);
-            azimuthRot = Random.Range(-20, 20);
-            Vector3 desiredRot = new Vector3(x + azimuthRot, y + euler, z);
-
-            gameObject.transform.rotation = Quaternion.Euler(desiredRot);
-            Debug.Log("Rotate to random view around vertical AND horizontal axis");
-        }
-        else if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             //gameObject.transform.rotation = Random.rotation;
 
@@ -82,7 +40,7 @@ public class cameraRotator : MonoBehaviour {
     }
 
     // fade camera
-    void fadeInOut()
+    public void fadeInOut()
     {
         // find camera 
         // toggle 
@@ -99,5 +57,37 @@ public class cameraRotator : MonoBehaviour {
             m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1);
             Debug.Log("FADE OUT");
         }
+    }
+
+    public void fadeOut()
+    {
+        if (faded == false)
+        {
+            faded = true;
+            m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1);
+            Debug.Log("FADE OUT");
+        }
+    }
+
+    public void fadeIn()
+    {
+        if (faded == true)
+        {
+            faded = false;
+            m_Fader.GetComponent<Renderer>().material.color = new Color(1, 0, 0, 0);
+            Debug.Log("FADE IN");
+        }
+    }
+    public void RotateSphere()
+    {
+        z = transform.eulerAngles.z;
+        x = transform.eulerAngles.x;
+        y = transform.eulerAngles.y;
+        azimuth = Random.Range(0, 360);
+        elevation = Random.Range(-20, 20);
+        Vector3 desiredRot = new Vector3(x + elevation, y + azimuth, z);
+
+        gameObject.transform.rotation = Quaternion.Euler(desiredRot);
+        Debug.Log("Rotate to random view (around vertical axis only)");
     }
 }

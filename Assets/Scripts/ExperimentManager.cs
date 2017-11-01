@@ -10,13 +10,15 @@ using System;
 
 public class ExperimentManager : MonoBehaviour
 {
-    public enum ExperimentState {Idle, WaitToStart, PrepTasks, InstrTask1, BeginTask1, Task1, EndTask1, BeginTask2, Task2, EndTask2, QuitApp };
+    public enum ExperimentState {Idle, FadeOut, FadeInt, ITI, PracticeTrial, EndPracticeTrial, WaitToStart, PrepTasks, InstrTask1, BeginTask1, Task1, EndTask1, BeginTask2, Task2, EndTask2, QuitApp };
     public ExperimentState currentState = ExperimentState.Idle;
     
     
     private float startTime;
     private Serializer serializer;
 
+    public bool practice = true;
+    public int counter = 0;
 
     ///  <summary>
     ///  Switch to a designated state and handle the associated changes to the experimental and stimulus settings
@@ -81,6 +83,7 @@ public class ExperimentManager : MonoBehaviour
 
         ProcessUserInput();
 
+
         // loop through experiment states and change state if time dependent event
         switch (currentState)
         {
@@ -126,49 +129,50 @@ public class ExperimentManager : MonoBehaviour
     // possible options are 1) UserInput (tap or click) 2) on Timer 3) tapCount
     private void ProcessUserInput()
     {
-        if (Input.GetKeyDown(KeyCode.X) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             
-            switch (currentState)
-            {
-                case ExperimentState.Idle:
-                    ChangeState(ExperimentState.WaitToStart);  // Change Experiment State to next 
-                    
-                    break;
-                case ExperimentState.WaitToStart:
-                    ChangeState(ExperimentState.PrepTasks);
-                    
-                    break;
-                case ExperimentState.PrepTasks:
-                    ChangeState(ExperimentState.InstrTask1);
-                    
-                    break;
-                case ExperimentState.InstrTask1:
-                    ChangeState(ExperimentState.BeginTask1);
-                    
-                    break;
-                case ExperimentState.BeginTask1:
-                    //ChangeState(ExperimentState.Task1);
-                    
-                    break;
-                case ExperimentState.Task1:
-                    ChangeState(ExperimentState.EndTask1);
-                    
-                    break;
-                case ExperimentState.EndTask1:
-                    //ChangeState(ExperimentState.BeginTask2);
-                    
-                    break;
-                case ExperimentState.BeginTask2:
-                    
-                    break;
-                default:
-                    break;
-            }
-            // return time and current state for debugging
-            Debug.Log("Time: " + Time.time + " current state: " + currentState);
-        }
 
+            if (practice) { 
+                switch (currentState)
+                {
+                    case ExperimentState.Idle:
+                        ChangeState(ExperimentState.ITI);  // Change Experiment State to next 
+
+                        break;
+                    case ExperimentState.ITI:
+                        ChangeState(ExperimentState.PracticeTrial);  // Change Experiment State to next 
+
+                        break;
+                    case ExperimentState.PracticeTrial:
+                        ChangeState(ExperimentState.EndPracticeTrial);
+
+                        break;
+                    case ExperimentState.EndPracticeTrial:
+                        counter = counter + 1;
+
+                        if (counter == 5)
+                        {
+                            Debug.Log("PRACTICE DONE");
+                            ChangeState(ExperimentState.Idle);
+                            practice = false;
+                            counter = 0;
+
+                        }
+                        else
+                        {
+
+                            ChangeState(ExperimentState.ITI);
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+                // return time and current state for debugging
+                Debug.Log("Time: " + Time.time + " current state: " + currentState);
+            }
+        }
     }
 
     
