@@ -23,13 +23,16 @@ public class Serializer : MonoBehaviour {
     private string  myfilename;
     private string  timeStamp = string.Format("{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
     private string  currentState;
-    private float   tempTime;      
+    private string  tempEvent;
+    private float   tempTime;   
+    
     private TextWriter sw;
     private GameObject experimentManager;
     private Vector3 tempPlayerPosition;     // position
     private Vector3 tempPlayerRotation;     // rotation
     private Vector3 tempSpherePosition;     // position
     private Vector3 tempSphereRotation;     // rotation
+    
     // prep file
     void Start () {
         experimentManager = GameObject.Find("ExperimentManager");
@@ -38,7 +41,9 @@ public class Serializer : MonoBehaviour {
         tempSpherePosition = sphere.transform.position;
         tempSphereRotation = sphere.transform.rotation.eulerAngles;
         tempTime = 0.0f;
+
         currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
+        tempEvent = "noevent";
 
         string subPath = "Data"; 
 
@@ -52,7 +57,7 @@ public class Serializer : MonoBehaviour {
         sw = new StreamWriter(myfilename);
 
         // write a header
-        string header = "x, y, z, playerPitch, playerYaw, playerRoll, sphere.x, sphere.y, sphere.z, spherePitch, sphereYaw, sphereRoll, event, time";
+        string header = "x, y, z, playerPitch, playerYaw, playerRoll, sphere.x, sphere.y, sphere.z, spherePitch, sphereYaw, sphereRoll, currentState, event, time";
         sw.WriteLine(header);
     }
 	
@@ -77,7 +82,7 @@ public class Serializer : MonoBehaviour {
                         tempPlayerRotation.x + "," + tempPlayerRotation.y + "," + tempPlayerRotation.z + "," +
                         tempSpherePosition.x + "," + tempSpherePosition.y + "," + tempSpherePosition.z + "," +
                         tempSphereRotation.x + "," + tempSphereRotation.y + "," + tempSphereRotation.z + "," +
-                        currentState + "," + tempTime;
+                        currentState + "," + tempEvent +"," + tempTime;
         sw.WriteLine(output);
     }
 

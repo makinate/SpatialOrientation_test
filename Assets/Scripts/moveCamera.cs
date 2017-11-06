@@ -1,49 +1,82 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+/// <summary>
+/// helper functions related to camera movement
+/// </summary>
+public class MoveCamera : MonoBehaviour {
 
-public class moveCamera : MonoBehaviour {
-
-    public GameObject player;
+    Camera cam; 
     public Transform sphere;
     public Transform target;
     public Texture starfield;
     public Texture room;
     public bool camLocked = false;
+    public bool targetOnScreen;
+    public float elevation;
+    public float azimuth;
+    public GameObject m_Fader;
 
     private Renderer rend;
-    private Vector3 diff_player_sphere;
+    private Vector3 diffPlayerSphere;
     private bool playerSphereAligned;
-    private bool sfTexture = false;
+    private GameObject player;
+    private GameObject experimentManager;
+    private GameObject target2;
+    private bool practice;
+    private bool faded = false;
     
+    float z;
+    float x;
+    float y;
+
+
+    void Awake()
+    {
+        player = GameObject.Find("Main Camera");
+        cam = GetComponent<Camera>();
+        //Find the fader object
+        m_Fader = GameObject.Find("Fader");
+        faded = true;
+        m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1);
+
+        target2 = GameObject.Find("Target 2");
+
+        //Check if we found something
+        if (m_Fader == null)
+            Debug.LogWarning("No Fader object found on camera.");
+
+    }
 
     void Start()
     {
 
         // get the renderer to swap the texture later
         rend = sphere.GetComponent<Renderer>();
+        experimentManager = GameObject.Find("ExperimentManager");
     }
 
     // Update is called once per frame
     void Update () {
 
-        // calculate angular difference between camera and sphere rotation
-        diff_player_sphere = player.transform.eulerAngles - sphere.transform.eulerAngles;
+        practice = experimentManager.GetComponent<ExperimentManager>().practice;
 
-        ViewInRange();
-
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            SetTexture(); 
+        if (practice) {
+            TestTargetinView();
         }
-        else if (Input.GetKeyDown(KeyCode.I))
+        else
+        {
+            targetOnScreen = false;
+        }
+        
+        // calculate angular difference between camera and sphere rotation
+        diffPlayerSphere = player.transform.eulerAngles - sphere.transform.eulerAngles;
+       
+        if (Input.GetKeyDown(KeyCode.I))
         {
             LockCamera();
             RotateSphere();
-            //Debug.Log("Camera Rotation: " + player.transform.eulerAngles);
-            //Debug.Log("Sphere Rotation: " + sphere.transform.eulerAngles);
-            //Debug.Log("Target Rotation: " + target.transform.eulerAngles);
-            //Debug.Log("Camera-Sphere Rotation: " + diff_player_sphere);
+
 
             if (camLocked)
             {
@@ -72,7 +105,7 @@ public class moveCamera : MonoBehaviour {
     // test if player and sphere rotation are within the same ballpark
     void ViewInRange()
     {
-        if ((diff_player_sphere.y <= 10 || diff_player_sphere.y >= 350) & (diff_player_sphere.x <= 10 || diff_player_sphere.x >= 350))
+        if ((diffPlayerSphere.y <= 10 || diffPlayerSphere.y >= 350) & (diffPlayerSphere.x <= 10 || diffPlayerSphere.x >= 350))
         {
             //Debug.Log("TARGET IN RANGE" + diff_player_sphere);
             playerSphereAligned = true;
@@ -85,6 +118,13 @@ public class moveCamera : MonoBehaviour {
         }
     }
 
+    // test if the target is in the center of the screen
+    void TestTargetinView()
+    {
+        Vector3 screenPoint = cam.WorldToViewportPoint(target2.transform.position);
+        targetOnScreen = screenPoint.z > 0 && screenPoint.x > 0.4 && screenPoint.x < 0.6 && screenPoint.y > 0.4 && screenPoint.y < 0.6;
+        
+    }
 
     void LockCamera()
     {
@@ -104,17 +144,34 @@ public class moveCamera : MonoBehaviour {
 
     public void SetTexture()
     {
-        if (!sfTexture)
+        if (practice)
         {
             rend.material.mainTexture = starfield;
-            sfTexture = true;
         }
         else
         {
             rend.material.mainTexture = room;
-            sfTexture = false;
         }
         
+    }
+    public void fadeOut()
+    {
+        if (faded == false)
+        {
+            faded = true;
+            m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1);
+            
+        }
+    }
+
+    public void fadeIn()
+    {
+        if (faded == true)
+        {
+            faded = false;
+            m_Fader.GetComponent<Renderer>().material.color = new Color(1, 0, 0, 0);
+            
+        }
     }
 
 }

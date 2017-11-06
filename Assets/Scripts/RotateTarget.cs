@@ -13,32 +13,19 @@ public class RotateTarget : MonoBehaviour {
         player = GameObject.Find("Main Camera");
     }
 	
-	// Update is called once per frame
-	void Update () {
-        
-
-
-        if (Input.GetKeyDown(KeyCode.R)) {
-            setAngle();
-            transform.RotateAround(transform.parent.position, new Vector3(0, 1, 0), azimuth);
-        }
-        else if (Input.GetKeyDown(KeyCode.T))
-        {
-            //setAngle();
-            azimuth = 5;
-            transform.RotateAround(transform.parent.position, new Vector3(0, -1, 0), azimuth);
-        }
-
-    }
     void setAngle()
     {
-        azimuth = Random.Range(0, 360);
+        
+        azimuth = Random.Range(90, 270);
         elevation = Random.Range(-20, 20);
     }
 
     public void Rotate()
     {
         setAngle();
+        // place object in front of camera
+        transform.position = Camera.main.transform.position + Camera.main.transform.forward * 1.2f;
+        // rotate it to a random position at least 90 deg from the camera forward view
         transform.RotateAround(transform.parent.position, new Vector3(0, 1, 0), azimuth);
         transform.RotateAround(transform.parent.position, new Vector3(1, 0, 0), elevation);
     }
@@ -46,7 +33,9 @@ public class RotateTarget : MonoBehaviour {
     // Set local rotation of target to player rotation
     public void FixTarget()
     {
-        gameObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 1.2f;
+        // transform.position = Camera.main.transform.position + Camera.main.transform.forward * 1.2f;
+        // place target straight ahead at 0 elevation 
+        transform.position = new Vector3 (Camera.main.transform.position.x, 0 , Camera.main.transform.position.z) + Camera.main.transform.forward * 1.2f;
 
     }
 }
