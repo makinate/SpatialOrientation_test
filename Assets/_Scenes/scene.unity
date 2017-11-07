@@ -494,7 +494,7 @@ Prefab:
     - target: {fileID: 114923255368535542, guid: 6af86fe096108b34197cd3cf7e361b18,
         type: 2}
       propertyPath: counter
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6af86fe096108b34197cd3cf7e361b18, type: 2}
@@ -796,7 +796,6 @@ MonoBehaviour:
   sbj: sbj00
   vision: control
   explore: active-multi
-  training: training
 --- !u!1001 &888416296
 Prefab:
   m_ObjectHideFlags: 0
@@ -1018,6 +1017,7 @@ GameObject:
   - component: {fileID: 1890987899}
   - component: {fileID: 1890987904}
   - component: {fileID: 1890987898}
+  - component: {fileID: 1890987903}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1047,6 +1047,7 @@ MonoBehaviour:
   m_Fader: {fileID: 0}
   insideOut: {fileID: 0}
   wireFrame: {fileID: 0}
+  diffPlayerSphere: {x: 0, y: 0, z: 0}
 --- !u!81 &1890987899
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1114,6 +1115,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1890987903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1890987897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 882ad95baf6130849b26d26cdd6c753e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sphere: {fileID: 1977856169}
+  elevation: 0
+  azimuth: 0
 --- !u!114 &1890987904
 MonoBehaviour:
   m_ObjectHideFlags: 0
