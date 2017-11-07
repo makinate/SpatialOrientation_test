@@ -233,8 +233,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b8fa41510dda3c4dad8443ae287e11d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  azimuth: 0
-  elevation: 0
 --- !u!23 &33373028
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -642,8 +640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b8fa41510dda3c4dad8443ae287e11d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  azimuth: 0
-  elevation: 0
 --- !u!23 &375503672
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1020,8 +1016,8 @@ GameObject:
   - component: {fileID: 1890987901}
   - component: {fileID: 1890987900}
   - component: {fileID: 1890987899}
-  - component: {fileID: 1890987898}
   - component: {fileID: 1890987904}
+  - component: {fileID: 1890987898}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1032,8 +1028,7 @@ GameObject:
 --- !u!114 &1890987898
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114059759033299696, guid: 64bbf12b30e9dad44b855212590d00fb,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1890987897}
   m_Enabled: 1
@@ -1042,7 +1037,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sphere: {fileID: 1977856169}
-  target: {fileID: 33373026}
+  target: {fileID: 375503670}
   starfield: {fileID: 2800000, guid: 6d1b3274e78d92a4b81da698be7821f3, type: 3}
   room: {fileID: 2800000, guid: 9942a7cc34f1e6049a35b527e08b17e6, type: 3}
   camLocked: 0
@@ -1050,6 +1045,8 @@ MonoBehaviour:
   elevation: 0
   azimuth: 0
   m_Fader: {fileID: 0}
+  insideOut: {fileID: 0}
+  wireFrame: {fileID: 0}
 --- !u!81 &1890987899
 AudioListener:
   m_ObjectHideFlags: 0

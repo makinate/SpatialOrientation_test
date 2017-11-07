@@ -14,17 +14,18 @@ public class Serializer : MonoBehaviour {
     public GameObject player; // the gameObject whose position we want to know
     public GameObject sphere;
     // define public variables for experiment
-    public string sbj     = "sbj00";
+    public string sbj     = "XX";
     public string vision  = "control";
     public string explore = "active-multi";
-    public string training = "training";
 
     // private variables
     private string  myfilename;
     private string  timeStamp = string.Format("{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
     private string  currentState;
-    private string  tempEvent;
-    private float   tempTime;   
+    private float   tempTime;
+    private float   totalTime;
+    private float   trial;
+    private bool    practice;
     
     private TextWriter sw;
     private GameObject experimentManager;
@@ -32,57 +33,68 @@ public class Serializer : MonoBehaviour {
     private Vector3 tempPlayerRotation;     // rotation
     private Vector3 tempSpherePosition;     // position
     private Vector3 tempSphereRotation;     // rotation
+    private Vector3 tempDiffPlayerSphere;
     
     // prep file
     void Start () {
         experimentManager = GameObject.Find("ExperimentManager");
+        trial = experimentManager.GetComponent<ExperimentManager>().counter;
+        practice = experimentManager.GetComponent<ExperimentManager>().practice;
+
         tempPlayerPosition = player.transform.position;
         tempPlayerRotation = player.transform.rotation.eulerAngles;
         tempSpherePosition = sphere.transform.position;
         tempSphereRotation = sphere.transform.rotation.eulerAngles;
-        tempTime = 0.0f;
-
+        tempDiffPlayerSphere = player.GetComponent<RotateCamera>().diffPlayerSphere;
         currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
-        tempEvent = "noevent";
-
+        tempTime = 0.0f;
+        totalTime = 0.0f;
+        
+        // prep output file
         string subPath = "Data"; 
-
-        bool exists = System.IO.Directory.Exists(subPath);
+        bool exists = System.IO.Directory.Exists(subPath); // test if data dir exists
 
         if (!exists)
             System.IO.Directory.CreateDirectory(subPath);
 
+        // output file name
         myfilename = "Data/"+ sbj + "_" + vision + "_" + explore + "_" + timeStamp + ".csv";
 
+        // open new file
         sw = new StreamWriter(myfilename);
 
-        // write a header
-        string header = "x, y, z, playerPitch, playerYaw, playerRoll, sphere.x, sphere.y, sphere.z, spherePitch, sphereYaw, sphereRoll, currentState, event, time";
+        // write a header to file
+        string header = "trial, practice, x, y, z, playerPitch, playerYaw, playerRoll, sphere.x, sphere.y, sphere.z, spherePitch, sphereYaw, sphereRoll, diffSP.x, diffSP.y, diffSP.z,  currentState, trialTime, totalTime";
         sw.WriteLine(header);
     }
 	
 	// log the data
 	void Update () {
+        trial = experimentManager.GetComponent<ExperimentManager>().counter;
+        practice = experimentManager.GetComponent<ExperimentManager>().practice;
+
         tempPlayerPosition = player.transform.position;
         tempPlayerRotation = player.transform.rotation.eulerAngles;
         tempSpherePosition = sphere.transform.position;
         tempSphereRotation = sphere.transform.rotation.eulerAngles;
-        tempTime     = tempTime + Time.fixedDeltaTime;
+        tempDiffPlayerSphere = player.GetComponent<RotateCamera>().diffPlayerSphere;
         currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
-
-        // write position once every Uptdate()
-        WriteToFile();
+        tempTime = experimentManager.GetComponent<ExperimentManager>().trialTime; // time passed in each exp state
+        totalTime += Time.fixedDeltaTime; // total time passed in experiment
         
+        WriteToFile();
     }
 
     // write position, rotation, events and time stamp to file
     void WriteToFile()
     {
-        string output = tempPlayerPosition.x + "," + tempPlayerPosition.y + "," + tempPlayerPosition.z + "," + 
+        string output = trial + "," + practice +"," +
+                        tempPlayerPosition.x + "," + tempPlayerPosition.y + "," + tempPlayerPosition.z + "," + 
                         tempPlayerRotation.x + "," + tempPlayerRotation.y + "," + tempPlayerRotation.z + "," +
                         tempSpherePosition.x + "," + tempSpherePosition.y + "," + tempSpherePosition.z + "," +
                         tempSphereRotation.x + "," + tempSphereRotation.y + "," + tempSphereRotation.z + "," +
-                        currentState + "," + tempEvent +"," + tempTime;
+                        tempDiffPlayerSphere.x + "," + tempDiffPlayerSphere.y + "," + tempDiffPlayerSphere.z + "," +
+                        currentState +"," + tempTime + "," + totalTime;
         sw.WriteLine(output);
     }
 

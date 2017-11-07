@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// helper functions related to camera movement
 /// </summary>
-public class MoveCamera : MonoBehaviour {
+public class RotateCamera : MonoBehaviour {
 
     Camera cam; 
     public Transform sphere;
@@ -17,104 +17,66 @@ public class MoveCamera : MonoBehaviour {
     public float azimuth;
     public GameObject m_Fader;
 
+    public Shader insideOut;
+    public Shader wireFrame;
+
     private Renderer rend;
-    private Vector3 diffPlayerSphere;
+    public Vector3 diffPlayerSphere;
     private bool playerSphereAligned;
     private GameObject player;
     private GameObject experimentManager;
     private GameObject target2;
     private bool practice;
-    private bool faded = false;
+    private bool faded = true;
     
     float z;
     float x;
     float y;
 
-
-    void Awake()
+    void Start()
     {
         player = GameObject.Find("Main Camera");
         cam = GetComponent<Camera>();
+
         //Find the fader object
         m_Fader = GameObject.Find("Fader");
-        faded = true;
-        m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1);
+        m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1); // Fade to black
 
         target2 = GameObject.Find("Target 2");
 
-        //Check if we found something
-        if (m_Fader == null)
-            Debug.LogWarning("No Fader object found on camera.");
-
-    }
-
-    void Start()
-    {
-
         // get the renderer to swap the texture later
         rend = sphere.GetComponent<Renderer>();
+        insideOut = Shader.Find("Insideout");
+        wireFrame = Shader.Find("HoloToolkit/Wireframe");
         experimentManager = GameObject.Find("ExperimentManager");
     }
 
     // Update is called once per frame
     void Update () {
-
+        // test if practice
         practice = experimentManager.GetComponent<ExperimentManager>().practice;
 
-        if (practice) {
-            TestTargetinView();
-        }
-        else
-        {
-            targetOnScreen = false;
-        }
+        TestTargetinView();
         
         // calculate angular difference between camera and sphere rotation
-        diffPlayerSphere = player.transform.eulerAngles - sphere.transform.eulerAngles;
-       
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            LockCamera();
-            RotateSphere();
-
-
-            if (camLocked)
-            {
-                // rotate camera to sphere
-                player.transform.localEulerAngles = sphere.transform.localEulerAngles;
-                // TO DO: switch off input from Oculus head motion
-            }
-            else if (!camLocked)
-            {
-                // TO DO: switch Oculus head motion back on
-               
-            }
-        }
-
-        
+        diffPlayerSphere = player.transform.localEulerAngles - sphere.transform.localEulerAngles;     
     }
 
-    // rotate sphere in a random az and el around player
-    public void RotateSphere()
-    {
-        int azimuth = Random.Range(0, 360);
-        int elevation = Random.Range(-20, 20);
-        sphere.transform.RotateAround(player.transform.position, new Vector3(0, 1, 0), azimuth);
-    }
-
+ 
     // test if player and sphere rotation are within the same ballpark
     void ViewInRange()
     {
-        if ((diffPlayerSphere.y <= 10 || diffPlayerSphere.y >= 350) & (diffPlayerSphere.x <= 10 || diffPlayerSphere.x >= 350))
-        {
-            //Debug.Log("TARGET IN RANGE" + diff_player_sphere);
-            playerSphereAligned = true;
-
-        }
-        else
-        {
-            //Debug.Log("target out of range");
-            playerSphereAligned = false;
+        if (!practice) { 
+            if ((diffPlayerSphere.y <= 10 || diffPlayerSphere.y >= 350) & (diffPlayerSphere.x <= 10 || diffPlayerSphere.x >= 350))
+            {
+                Debug.Log("TARGET IN RANGE" + diffPlayerSphere);
+                playerSphereAligned = true;
+            }
+            else
+            {
+                Debug.Log("target out of range");
+                playerSphereAligned = false;
+            }
         }
     }
 
@@ -123,7 +85,6 @@ public class MoveCamera : MonoBehaviour {
     {
         Vector3 screenPoint = cam.WorldToViewportPoint(target2.transform.position);
         targetOnScreen = screenPoint.z > 0 && screenPoint.x > 0.4 && screenPoint.x < 0.6 && screenPoint.y > 0.4 && screenPoint.y < 0.6;
-        
     }
 
     void LockCamera()
@@ -142,6 +103,7 @@ public class MoveCamera : MonoBehaviour {
 
     }
 
+    // apply texture to sphere depending on practice or test trials
     public void SetTexture()
     {
         if (practice)
@@ -151,10 +113,11 @@ public class MoveCamera : MonoBehaviour {
         else
         {
             rend.material.mainTexture = room;
-        }
-        
+        }       
     }
-    public void fadeOut()
+
+    // fadeout function
+    public void FadeOut()
     {
         if (faded == false)
         {
@@ -164,13 +127,27 @@ public class MoveCamera : MonoBehaviour {
         }
     }
 
-    public void fadeIn()
+    // fadein function
+    public void FadeIn()
     {
         if (faded == true)
         {
             faded = false;
             m_Fader.GetComponent<Renderer>().material.color = new Color(1, 0, 0, 0);
             
+        }
+    }
+
+    // sawps shader 
+    public void SwapShader()
+    {
+        if (rend.material.shader == insideOut)
+        {
+            rend.material.shader = wireFrame;
+        }
+        else
+        {
+            rend.material.shader = insideOut;
         }
     }
 
