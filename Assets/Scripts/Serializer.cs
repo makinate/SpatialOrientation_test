@@ -28,7 +28,7 @@ public class Serializer : MonoBehaviour {
     private bool    practice;
     
     private TextWriter sw;
-    private GameObject experimentManager;
+    private GameObject em;
     private Vector3 tempPlayerPosition;     // position
     private Vector3 tempPlayerRotation;     // rotation
     private Vector3 tempSpherePosition;     // position
@@ -37,16 +37,16 @@ public class Serializer : MonoBehaviour {
     
     // prep file
     void Start () {
-        experimentManager = GameObject.Find("ExperimentManager");
-        trial = experimentManager.GetComponent<ExperimentManager>().counter;
-        practice = experimentManager.GetComponent<ExperimentManager>().practice;
+        em = GameObject.Find("ExperimentManager");
+        trial = em.GetComponent<ExperimentManager>().counter;
+        practice = em.GetComponent<ExperimentManager>().practice;
 
         tempPlayerPosition = player.transform.position;
         tempPlayerRotation = player.transform.rotation.eulerAngles;
         tempSpherePosition = sphere.transform.position;
         tempSphereRotation = sphere.transform.rotation.eulerAngles;
         tempDiffPlayerSphere = player.GetComponent<RotateCamera>().diffPlayerSphere;
-        currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
+        currentState = em.GetComponent<ExperimentManager>().currentState.ToString();
         tempTime = 0.0f;
         totalTime = 0.0f;
         
@@ -70,16 +70,16 @@ public class Serializer : MonoBehaviour {
 	
 	// log the data
 	void Update () {
-        trial = experimentManager.GetComponent<ExperimentManager>().counter;
-        practice = experimentManager.GetComponent<ExperimentManager>().practice;
+        trial = em.GetComponent<ExperimentManager>().counter;
+        practice = em.GetComponent<ExperimentManager>().practice;
 
         tempPlayerPosition = player.transform.position;
         tempPlayerRotation = player.transform.rotation.eulerAngles;
         tempSpherePosition = sphere.transform.position;
         tempSphereRotation = sphere.transform.rotation.eulerAngles;
         tempDiffPlayerSphere = player.GetComponent<RotateCamera>().diffPlayerSphere;
-        currentState = experimentManager.GetComponent<ExperimentManager>().currentState.ToString();
-        tempTime = experimentManager.GetComponent<ExperimentManager>().trialTime; // time passed in each exp state
+        currentState = em.GetComponent<ExperimentManager>().currentState.ToString();
+        tempTime = em.GetComponent<ExperimentManager>().trialTime; // time passed in each exp state
         totalTime += Time.fixedDeltaTime; // total time passed in experiment
         
         WriteToFile();

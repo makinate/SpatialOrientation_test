@@ -9,18 +9,18 @@ public class RotateTarget : MonoBehaviour {
     private float azimuth;
     private float elevation;
     private GameObject player;
-    private GameObject experimentManager;
+    private GameObject em;
     private bool practice;
 
     // Use this for initialization
     void Start () {
         player = GameObject.Find("Main Camera");
-        experimentManager = GameObject.Find("ExperimentManager");
+        em = GameObject.Find("ExperimentManager");
     }
     void Update()
     {
         // test if practice
-        practice = experimentManager.GetComponent<ExperimentManager>().practice;
+        practice = em.GetComponent<ExperimentManager>().practice;
     }
 
 

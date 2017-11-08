@@ -5,18 +5,39 @@ using UnityEngine;
 /// Rotate the sphere
 /// </summary>
 public class RotateSphere : MonoBehaviour {
-    public Transform sphere;
 
-    private bool practice;
-    private GameObject player;
+    
+    public Texture starfield;
+    public Texture room;
+    public Texture hallway;
     public float elevation;
     public float azimuth;
+
+    private Renderer rend;
+    private bool practice;
+    private GameObject player;
+    private GameObject sphere;
+    private GameObject em;
+    private Shader insideOut;
+    private Shader wireFrame;
 
     // Use this for initialization
     void Start () {
         player = GameObject.Find("Main Camera");
-    }
+        sphere = GameObject.Find("Sphere 1");
+        em     = GameObject.Find("ExperimentManager");
+        
+        // get the renderer to swap the texture later
+        rend = sphere.GetComponent<Renderer>();
 
+        insideOut = Shader.Find("Insideout");
+        wireFrame = Shader.Find("HoloToolkit/Wireframe");
+    }
+    private void Update()
+    {
+        // test if practice
+        practice = em.GetComponent<ExperimentManager>().practice;
+    }
     // rotate sphere in a random az and el around player
     public void Rotate()
     {
@@ -41,5 +62,33 @@ public class RotateSphere : MonoBehaviour {
         transform.localEulerAngles = new Vector3(0, 0, 0);
         sphere.transform.localEulerAngles = new Vector3(0, azimuth, 0);
     }
+    // apply texture to sphere depending on practice or test trials
+    public void SetTexture()
+    {
+        Debug.Log("Setting Texture");
+        if (practice)
+        {
+            Debug.Log("HALLWAY");
+            rend.material.mainTexture = hallway;
+        }
+        else
+        {
+            Debug.Log("ROOM");
+            rend.material.mainTexture = room;
+        }
+    }
 
+    // sawps shader 
+    public void SwapShader()
+    {
+        Debug.Log("Swapping shader");
+        if (rend.material.shader == insideOut)
+        {
+            rend.material.shader = wireFrame;
+        }
+        else
+        {
+            rend.material.shader = insideOut;
+        }
+    }
 }

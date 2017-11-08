@@ -7,25 +7,21 @@ using UnityEngine;
 public class RotateCamera : MonoBehaviour {
 
     Camera cam; 
-    public Transform sphere;
-    public Transform target;
-    public Texture starfield;
-    public Texture room;
+
+
     public bool camLocked = false;
     public bool targetOnScreen;
     public float elevation;
     public float azimuth;
     public GameObject m_Fader;
 
-    public Shader insideOut;
-    public Shader wireFrame;
-
-    private Renderer rend;
     public Vector3 diffPlayerSphere;
     private bool playerSphereAligned;
     private GameObject player;
-    private GameObject experimentManager;
-    private GameObject target2;
+    private GameObject em;
+    private GameObject target;
+    private GameObject sphere;
+    //private GameObject target1;
     private bool practice;
     private bool faded = true;
     
@@ -36,25 +32,25 @@ public class RotateCamera : MonoBehaviour {
     void Start()
     {
         player = GameObject.Find("Main Camera");
-        cam = GetComponent<Camera>();
+        sphere = GameObject.Find("Sphere 1");
+        target = GameObject.Find("Target");
+        //target2 = GameObject.Find("Target 2");
+        em = GameObject.Find("ExperimentManager");
+        cam = player.GetComponent<Camera>();
 
         //Find the fader object
         m_Fader = GameObject.Find("Fader");
         m_Fader.GetComponent<Renderer>().material.color = new Color(0, 0, 0, 1); // Fade to black
 
-        target2 = GameObject.Find("Target 2");
+        
 
-        // get the renderer to swap the texture later
-        rend = sphere.GetComponent<Renderer>();
-        insideOut = Shader.Find("Insideout");
-        wireFrame = Shader.Find("HoloToolkit/Wireframe");
-        experimentManager = GameObject.Find("ExperimentManager");
+        
     }
 
     // Update is called once per frame
     void Update () {
         // test if practice
-        practice = experimentManager.GetComponent<ExperimentManager>().practice;
+        practice = em.GetComponent<ExperimentManager>().practice;
 
         TestTargetinView();
         
@@ -83,7 +79,7 @@ public class RotateCamera : MonoBehaviour {
     // test if the target is in the center of the screen
     void TestTargetinView()
     {
-        Vector3 screenPoint = cam.WorldToViewportPoint(target2.transform.position);
+        Vector3 screenPoint = cam.WorldToViewportPoint(target.transform.position);
         targetOnScreen = screenPoint.z > 0 && screenPoint.x > 0.4 && screenPoint.x < 0.6 && screenPoint.y > 0.4 && screenPoint.y < 0.6;
     }
 
@@ -101,19 +97,6 @@ public class RotateCamera : MonoBehaviour {
             camLocked = true;
         }
 
-    }
-
-    // apply texture to sphere depending on practice or test trials
-    public void SetTexture()
-    {
-        if (practice)
-        {
-            rend.material.mainTexture = starfield;
-        }
-        else
-        {
-            rend.material.mainTexture = room;
-        }       
     }
 
     // fadeout function
@@ -138,17 +121,6 @@ public class RotateCamera : MonoBehaviour {
         }
     }
 
-    // sawps shader 
-    public void SwapShader()
-    {
-        if (rend.material.shader == insideOut)
-        {
-            rend.material.shader = wireFrame;
-        }
-        else
-        {
-            rend.material.shader = insideOut;
-        }
-    }
+
 
 }

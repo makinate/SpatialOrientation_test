@@ -23,13 +23,13 @@ public class ExperimentManager : MonoBehaviour
     public float trialTime;         // timer that's reset at each experiment state
 
     // Experiment GameObjects
-    public GameObject waitForInstructions;  // Text instructions
-    public GameObject clicktoStart;         // Text instructions
+    //public GameObject waitForInstructions;  // Text instructions
+    //public GameObject clicktoStart;         // Text instructions
     private Serializer serializer;          // writes data to file
     private GameObject player;              // main camera
     private GameObject sphere;              // photosphere
-    private GameObject target1;             // grey start target in practice trials
-    private GameObject target2;             // red target in practice trials
+    private GameObject target;             // grey start target in practice trials
+    //private GameObject target2;             // red target in practice trials
 
     // bools to toggle what is called during Update
     bool isCoroutineStarted = false;
@@ -50,27 +50,30 @@ public class ExperimentManager : MonoBehaviour
         // find all relevant gameobjects
         player = GameObject.Find("Main Camera");
         sphere = GameObject.Find("Sphere 1");
-        target1 = GameObject.Find("Target 1");
-        target2 = GameObject.Find("Target 2");
+        target = GameObject.Find("Target");
+        if (practice) target.SetActive(false); // switch target off for practice trial
         buttonsEnabled = true;
-        
+
+
+
         ResetVars(); //reset variables 
+        
     }
 
     // Main experiment loop: ExperimentState and practice/!practice determine what happens
     void Update()
     {
-        targetOnScreen = player.GetComponent<RotateCamera>().targetOnScreen; // test if red target is in FOV
+        targetOnScreen = GetComponent<RotateCamera>().targetOnScreen; // test if red target is in FOV
         ProcessUserInput(); // check for input from participant/experimenter
 
         // Default state is Idle
         switch (currentState)
         {
             case ExperimentState.Idle:
-                waitForInstructions.SetActive(true);
+                //waitForInstructions.SetActive(true);
                 break;
             default:
-                waitForInstructions.SetActive(false);
+                //waitForInstructions.SetActive(false);
                 break;
         }
 
@@ -84,15 +87,15 @@ public class ExperimentManager : MonoBehaviour
                     {
                         startTime = Time.time;
                         // set texture
-                        player.GetComponent<RotateCamera>().SetTexture();
+                        GetComponent<RotateSphere>().SetTexture();
                         // fade out
-                        player.GetComponent<RotateCamera>().FadeOut();
+                        GetComponent<RotateCamera>().FadeOut();
                         // Rotate sphere to random start position
-                        player.GetComponent<RotateSphere>().Rotate();
+                        //player.GetComponent<RotateSphere>().Rotate();
                         // make target 1 align with camera
-                        target1.GetComponent<RotateTarget>().FixTarget();
+                        //target1.GetComponent<RotateTarget>().FixTarget();
                         // rotate target 2 to random position
-                        target2.GetComponent<RotateTarget>().Rotate();
+                        //target2.GetComponent<RotateTarget>().Rotate();
 
                         calledOnceITI = true;
                     }
@@ -102,37 +105,35 @@ public class ExperimentManager : MonoBehaviour
                     if (!calledOnceTrial)
                     {
                         startTime = Time.time;
-                        player.GetComponent<RotateCamera>().FadeIn();
+                        GetComponent<RotateCamera>().FadeIn();
                         calledOnceTrial = true;
                     }
-                    if (targetOnScreen) {
-                        ChangeState(ExperimentState.EndTrial);
-                    }
+                    //if (targetOnScreen) {
+                    //    ChangeState(ExperimentState.EndTrial);
+                    //}
                     trialTime = Time.time - startTime;
                     break;
             case ExperimentState.EndTrial:
                     if (!calledOnceEndTrial)
                     {
                         startTime = Time.time;
-                        player.GetComponent<RotateCamera>().FadeOut();
+                        GetComponent<RotateCamera>().FadeOut();
                         calledOnceEndTrial = true;
                     }
                     counter += 1; // increase counter by 1 at end of each trial
                     ResetVars();  // Reset toggle variables
 
                     // decide what happens at end of trial
-                    if (counter == 5)
+                    if (counter == 1)
                     {
                         Debug.Log("PRACTICE DONE");
                         practice = false;
                         counter = 0;
                         ChangeState(ExperimentState.Idle);
-
-
                     }
                     else
                     {
-                        clicktoStart.SetActive(true);
+                        //clicktoStart.SetActive(true);
                         ChangeState(ExperimentState.ITI);
                     }
                     trialTime = Time.time - startTime;
@@ -149,11 +150,12 @@ public class ExperimentManager : MonoBehaviour
                     {
                         startTime = Time.time;
                         buttonsEnabled = true;
-                        player.GetComponent<RotateCamera>().FadeOut();     // fade out   
-                        target1.SetActive(false);                        // deactivate the grey target spheres in test trials
-                        player.GetComponent<RotateCamera>().SwapShader();  // Switch between wireframe and insideout shader                      
-                        player.GetComponent<RotateSphere>().ResetSphere(); // Reset local euler angles of sphere rotation to 0 rand 0 
-                        target2.GetComponent<RotateTarget>().Rotate();   // move target to elevation zero and at random orientation from camera view   
+                        GetComponent<RotateCamera>().FadeOut();     // fade out   
+                        
+                        GetComponent<RotateSphere>().SwapShader();  // Switch between wireframe and insideout shader                      
+                        GetComponent<RotateSphere>().ResetSphere(); // Reset local euler angles of sphere rotation to 0 rand 0 
+                        target.SetActive(true);                        // deactivate the grey target spheres in test trials
+                        target.GetComponent<RotateTarget>().Rotate();   // move target to elevation zero and at random orientation from camera view   
                         calledOnceITI = true;
                     }
                     trialTime = Time.time - startTime;
@@ -162,20 +164,19 @@ public class ExperimentManager : MonoBehaviour
                     if (!calledOnceTrial)
                     {
                         startTime = Time.time;
-                        target2.SetActive(true);
-                        player.GetComponent<RotateCamera>().SetTexture(); // set texture 
-                        player.GetComponent<RotateCamera>().FadeIn();     // fade in  
+                        GetComponent<RotateSphere>().SetTexture(); // set texture 
+                        GetComponent<RotateCamera>().FadeIn();     // fade in  
                         calledOnceTrial = true;
                     }
                     // toggle instructions when participant is facing in the right directions
                     if (targetOnScreen)
                     {
                         buttonsEnabled = true;
-                        clicktoStart.SetActive(true);
+                        //clicktoStart.SetActive(true);
                     }
                     else {
                         buttonsEnabled = false;
-                        clicktoStart.SetActive(false);
+                        //clicktoStart.SetActive(false);
                     }
                     trialTime = Time.time - startTime;
                     break;
@@ -184,10 +185,10 @@ public class ExperimentManager : MonoBehaviour
                     {
                         startTime = Time.time;
                         buttonsEnabled = false;
-                        clicktoStart.SetActive(false);
-                        target2.SetActive(false);
-                        player.GetComponent<RotateCamera>().SwapShader(); // Switch between wireframe and insideout shader
-                        player.GetComponent<RotateCamera>().FadeIn();
+                        //clicktoStart.SetActive(false);
+                        target.SetActive(false);
+                        GetComponent<RotateSphere>().SwapShader(); // Switch between wireframe and insideout shader
+                        GetComponent<RotateCamera>().FadeIn();
                         calledOnceShowTargetView = true;
                     }
                     if (!isCoroutineStarted)
@@ -200,8 +201,8 @@ public class ExperimentManager : MonoBehaviour
                     if (!calledOnceBetweenViews)
                     {
                         startTime = Time.time;
-                        player.GetComponent<RotateCamera>().FadeOut();
-                        player.GetComponent<RotateSphere>().Rotate(); // Rotate sphere to new random view
+                        GetComponent<RotateCamera>().FadeOut();
+                        GetComponent<RotateSphere>().Rotate(); // Rotate sphere to new random view
                         calledOnceBetweenViews = true;
                     }
                     if (!isCoroutineStarted)
@@ -214,7 +215,7 @@ public class ExperimentManager : MonoBehaviour
                     if (!calledOnceShowStartView)
                     {
                         startTime = Time.time;
-                        player.GetComponent<RotateCamera>().FadeIn(); // FadeIn
+                        GetComponent<RotateCamera>().FadeIn(); // FadeIn
                         calledOnceShowStartView = true;
                     }
                     if (!isCoroutineStarted)
@@ -228,7 +229,7 @@ public class ExperimentManager : MonoBehaviour
                     {
                         startTime = Time.time;
                         buttonsEnabled = true;
-                        player.GetComponent<RotateCamera>().FadeOut(); // FadeOut 
+                        GetComponent<RotateCamera>().FadeOut(); // FadeOut 
                         calledOnceSbjResponding = true;
                     }
                     trialTime = Time.time - startTime;
@@ -238,7 +239,7 @@ public class ExperimentManager : MonoBehaviour
                     {
                         startTime = Time.time;
                         counter += 1; // increase counter 
-                        player.GetComponent<RotateCamera>().FadeOut();
+                        GetComponent<RotateCamera>().FadeOut();
                         calledOnceEndTrial = true;
                     }
                     ResetVars();
@@ -252,7 +253,7 @@ public class ExperimentManager : MonoBehaviour
                     }
                     else
                     {
-                        clicktoStart.SetActive(true);
+                        //clicktoStart.SetActive(true);
                         ChangeState(ExperimentState.ITI);
                     }
                     trialTime = Time.time - startTime;
@@ -265,20 +266,22 @@ public class ExperimentManager : MonoBehaviour
     IEnumerator TrialCoroutine()
     {
         isCoroutineStarted = true;
-        yield return new WaitForSeconds(0.5f); // waits 0.5 seconds
-        isCoroutineStarted = false;
         switch (currentState)
         {           
             case ExperimentState.ShowTargetView:
+                yield return new WaitForSeconds(2.0f); // waits 0.5 seconds
                 ChangeState(ExperimentState.BetweenViews);
                 break;
             case ExperimentState.BetweenViews:
+                yield return new WaitForSeconds(1.0f); // waits 0.5 seconds
                 ChangeState(ExperimentState.ShowStartView);
                 break;
             case ExperimentState.ShowStartView:
+                yield return new WaitForSeconds(2.0f); // waits 0.5 seconds
                 ChangeState(ExperimentState.SbjResponding);
                 break;
-        }       
+        }
+        isCoroutineStarted = false;
     }
 
     // Change Experiment state
@@ -304,18 +307,18 @@ public class ExperimentManager : MonoBehaviour
             switch (currentState)
             {
                 case ExperimentState.Idle:
-                    clicktoStart.SetActive(true);
+                    //clicktoStart.SetActive(true);
                     ChangeState(ExperimentState.ITI);  
                     break;
                 case ExperimentState.ITI:
-                    clicktoStart.SetActive(false);
+                    //clicktoStart.SetActive(false);
                     ChangeState(ExperimentState.Trial); 
                     break;
                 case ExperimentState.Trial:
-                    ChangeState(ExperimentState.ShowTargetView);
+                    if (practice) ChangeState(ExperimentState.EndTrial); else ChangeState(ExperimentState.ShowTargetView);
                     break;
                 case ExperimentState.SbjResponding:
-                    clicktoStart.SetActive(true);
+                    //clicktoStart.SetActive(true);
                     ChangeState(ExperimentState.EndTrial); 
                     break;
                 default:
@@ -326,17 +329,17 @@ public class ExperimentManager : MonoBehaviour
         } 
         else if (Input.GetKeyDown(KeyCode.I)) // for testing
         {
-            target2.SetActive(true);
-            target2.transform.localPosition = new Vector3(0, 0, 0.4f);
+            //target2.SetActive(true);
+            //target2.transform.localPosition = new Vector3(0, 0, 0.4f);
             if (!onTest)
             {
-                player.GetComponent<RotateCamera>().FadeIn();                
+                GetComponent<RotateCamera>().FadeIn();                
                 onTest = true;
                 print("FADE IN!");
             }
             else
             {
-                player.GetComponent<RotateCamera>().FadeOut();                
+                GetComponent<RotateCamera>().FadeOut();                
                 onTest = false;
                 print("Fade Out!");
             }
